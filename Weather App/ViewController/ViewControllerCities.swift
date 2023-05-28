@@ -112,7 +112,7 @@ class ViewControllerCities: UIViewController, UITableViewDataSource, UITableView
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedCity = cities[indexPath.row]
         
-        // Şehir ID'sini kullanarak API'dan hava durumu verilerini al
+        // Hava durumu verilerini al ve güncelleme bloğunu kullan
         getWeatherData(cityID: String(selectedCity.id)) { [weak self] weatherData in
             DispatchQueue.main.async {
                 if let weatherData = weatherData {
@@ -123,13 +123,18 @@ class ViewControllerCities: UIViewController, UITableViewDataSource, UITableView
                     
                     // Hava durumu verilerini ViewController'da göster
                     self?.showWeatherData(weatherData)
-                   
+                    
+                    // Kullanıcının konumunu güncelleme
                 } else {
-                    print("Hava durumu verileri alınamadı.")
+                    // Hava durumu verileri alınamadığında kullanıcıya bir hata mesajı göster
+                    let alert = UIAlertController(title: "Hata", message: "API bu şehrin verisini sağlıklı sağlamamaktadır.Lütfen başka bir şehir seçin.", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "Tamam", style: .default, handler: nil))
+                    self?.present(alert, animated: true, completion: nil)
                 }
             }
         }
     }
+
     func showWeatherData(_ weatherData: WeatherData) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         if let viewController = storyboard.instantiateViewController(withIdentifier: "ViewController") as? ViewController {
@@ -152,9 +157,6 @@ class ViewControllerCities: UIViewController, UITableViewDataSource, UITableView
             tableView.reloadRows(at: [selectedIndexPath], with: .none)
         }
     }
-
-
-
 
 
     func getWeatherData(cityID: String, completion: @escaping (WeatherData?) -> Void) {

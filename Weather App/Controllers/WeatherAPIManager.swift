@@ -80,6 +80,41 @@ struct WeatherAPIManager {
         
         task.resume()
     }
+    static func getWeatherDataForLocation(latitude: Double, longitude: Double, completion: @escaping (WeatherData?) -> Void) {
+        let urlString = "https://api.openweathermap.org/data/2.5/weather?APPID=\(apiKey)&units=metric&lat=\(latitude)&lon=\(longitude)"
+        
+        guard let url = URL(string: urlString) else {
+            print("Geçersiz URL")
+            completion(nil)
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+            if let error = error {
+                print("API isteği sırasında hata oluştu: \(error.localizedDescription)")
+                completion(nil)
+                return
+            }
+            
+            guard let data = data else {
+                print("Veri alınamadı")
+                completion(nil)
+                return
+            }
+            
+            do {
+                let decoder = JSONDecoder()
+                let weatherData = try decoder.decode(WeatherData.self, from: data)
+                completion(weatherData)
+            } catch {
+                print("JSON çözme hatası: \(error.localizedDescription)")
+                completion(nil)
+            }
+        }
+        
+        task.resume()
+    }
+
     
     
 }

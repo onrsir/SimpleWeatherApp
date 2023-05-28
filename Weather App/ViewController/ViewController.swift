@@ -10,8 +10,8 @@
 // tableview'da bazı verilere tıklanınca hata alınıyor. onu alert şeklinde göster
 // ve alert'de api'dan veri alınamıyor lütfen başka bir şehire bakınız.
 import UIKit
-
 class ViewController: UIViewController {
+
 
     @IBOutlet weak var cityNameLabel: UILabel!
     
@@ -44,6 +44,8 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        
+        
         if let weatherData = weatherData {
             displayWeatherData(weatherData)
         } else {
@@ -62,12 +64,13 @@ class ViewController: UIViewController {
             }
 
     func getWeatherData(cityID: String, completion: @escaping (WeatherData?) -> Void) {
-        WeatherAPIManager.fetchWeatherData(cityID: cityID) { [weak self] weatherData in
+        WeatherAPIManager.fetchWeatherData(cityID: cityID) { weatherData in
             DispatchQueue.main.async {
                 completion(weatherData)
             }
         }
     }
+
 
 
     func updateWeatherData(_ updatedWeatherData: WeatherData) {
@@ -84,29 +87,34 @@ class ViewController: UIViewController {
 
     func displayWeatherData(_ weatherData: WeatherData) {
         cityNameLabel.text = weatherData.name
-        currentLabel.text = "Current: \(weatherData.main.temp) °C"
-        feelsLikeLabel.text = "Feels Like: \(weatherData.main.feels_like) °C"
-        highestLabel.text = "H: \(weatherData.main.temp_max) °C"
-        lowestLabel.text = "L: \(weatherData.main.temp_min) °C"
-        humidityLabel.text = "\(weatherData.main.humidity) %"
+        currentLabel.text = "Current: \(Int(weatherData.main.temp)) °C"
+        feelsLikeLabel.text = "Feels Like: \(Int(weatherData.main.feels_like)) °C"
+        highestLabel.text = "H: \(Int(weatherData.main.temp_max)) °C"
+        lowestLabel.text = "L: \(Int(weatherData.main.temp_min)) °C"
+        humidityLabel.text = "%\(weatherData.main.humidity) "
         
         let windSpeed = Int(weatherData.wind.speed * 3.6)
-        windSpeedLabel.text = "\(windSpeed) km/h"
+        windSpeedLabel.text = "Speed:\(windSpeed) km/h"
         
         let windGust = Int(Double(weatherData.wind.deg) * 3.6)
-        windGustLabel.text = "\(windGust) km/h"
+        windGustLabel.text = "Gust:\(windGust) km/h"
         
-        seaLevelLabel.text = "\(weatherData.main.pressure) hPa"
+        seaLevelLabel.text = "\(weatherData.main.pressure)"
         lotitudeLabel.text = "Latitude: \(String(format: "%.0f", weatherData.coord.lat))"
         longitudeLabel.text = "Longitude: \(String(format: "%.0f", weatherData.coord.lon))"
         
         weatherDescriptionLabel.text = weatherData.weather.first?.description
     }
  
+    
+    // MARK: LOCATİON
+    
 
-
+    // CASE'DE ANLIK LOKASYON İSTENMEDİĞİ İÇİN CORELOCATİON KULLANILMAMIŞTIR.
+            
     
 }
+
 
 
 
